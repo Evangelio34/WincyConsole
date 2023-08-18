@@ -6,19 +6,21 @@
 #include <cstdlib>
 using namespace std;
 using namespace chrono;
+
 struct WindowInfo {
     HWND handle;
     std::string title;
 };
-vector<WindowInfo> windowList; // Lista de ventanas abiertas
-string ownWindowTitle = "Wincy"; // Cambia esto con el título de tu propia aplicación
+
+vector<WindowInfo> windowList;
+string ownWindowTitle = "Wincy";
 
 BOOL CALLBACK EnumWindowsCallback(HWND hwnd, LPARAM lParam) {
     char windowTitle[256];
     GetWindowTextA(hwnd, windowTitle, sizeof(windowTitle));
 
     if (IsWindowVisible(hwnd) && strlen(windowTitle) > 0) {
-        if (ownWindowTitle != windowTitle && hwnd != GetConsoleWindow()) { // Ignorar la ventana de la terminal
+        if (ownWindowTitle != windowTitle && hwnd != GetConsoleWindow()) {
             WindowInfo windowInfo;
             windowInfo.handle = hwnd;
             windowInfo.title = windowTitle;
@@ -28,64 +30,55 @@ BOOL CALLBACK EnumWindowsCallback(HWND hwnd, LPARAM lParam) {
 
     return TRUE;
 }
+
 void setWindowOpacity(HWND hwnd, BYTE opacity) {
     SetWindowLong(hwnd, GWL_EXSTYLE, GetWindowLong(hwnd, GWL_EXSTYLE) | WS_EX_LAYERED);
     SetLayeredWindowAttributes(hwnd, 0, opacity, LWA_ALPHA);
 }
 
+void bringWindowToTop(HWND hwnd) {
+    SetForegroundWindow(hwnd);
+}
+
 int main() {
-    bool continuar = false;
-    EnumWindows(EnumWindowsCallback, NULL);
-    system("cls");
-    cout << "\n __          ___                  ";
-    cout << "\n . .        / (_)                 ";
-    cout << "\n  . .  /.  / / _ _ __   ___ _   _ ";
-    cout << "\n   . ./  ./ / | | '_ . / __| | | |";
-    cout << "\n    .  /.  /  | | | | | (__| |_| |";
-    cout << "\n     ./  ./   |_|_| |_|.___|.__, |";
-    cout << "\n                             __/ |";
-    cout << "\n                            |___/  By Evangelio69";
-    cout << "\n                                  ";
-    cout << "\n                          Ventanas Abiertas :            ";
+    bool continuar = true;
+    int opcion;
 
-    do
-    {
-        for (int i = 0; i < windowList.size(); i++) {
-            cout << "\n[" << i + 1 << "] " << windowList[i].title << endl;
+    do {
+        cout << "=== Menu de Opciones ===" << endl;
+        cout << "1. Ajustar Transparencia de Ventana" << endl;
+        cout << "2. Poner Ventana en Primer Plano" << endl;
+        cout << "3. Salir" << endl;
+        cout << "Elija una opción: ";
+        cin >> opcion;
+
+        switch (opcion) {
+            case 1: {
+                EnumWindows(windowList.clear(), NULL);
+                // Resto del código para ajustar la transparencia...
+                int selectedWindowNumber;
+                // Código para seleccionar ventana y ajustar la opacidad...
+                break;
+            }
+            case 2: {
+                EnumWindows(windowList.clear(), NULL);
+                // Código para poner ventana en primer plano...
+                int selectedWindowNumber;
+                // Código para seleccionar ventana y ponerla en primer plano...
+                break;
+            }
+            case 3: {
+                cout << "Saliendo del programa." << endl;
+                continuar = false;
+                break;
+            }
+            default: {
+                cout << "Opción inválida. Por favor, elija una opción válida." << endl;
+                break;
+            }
         }
 
-        int selectedWindowNumber;
-        cout << "\n";
-        cout << "Ingrese el numero de la ventana a la que desea ajustar la transparencia: ";
-        cin >> selectedWindowNumber;
-
-        if (selectedWindowNumber >= 1 && selectedWindowNumber <= windowList.size()) {
-            HWND selectedWindowHandle = windowList[selectedWindowNumber - 1].handle;
-
-            cout << "Ingrese el nivel de opacidad (0-255): ";
-            int opacity;
-            cin >> opacity;
-
-            setWindowOpacity(selectedWindowHandle, static_cast<BYTE>(opacity));
-            cout << "Transparencia de la ventana ajustada." << std::endl;
-        }
-        else {
-            cout << "Numero de ventana inválido." << std::endl;
-        }
-        char respuesta;
-        cout << "¿Desea continuar? (S/N): ";
-        cin >> respuesta;
-        if (respuesta == 'S' || respuesta == 's') {
-            continuar = true;
-        }
-        else {
-            continuar = false;
-        }
     } while (continuar);
 
-    system("cls");
-    cout << "See you Later" << endl;
-    seconds duracionEspera(3);
-this_thread::sleep_for(duracionEspera);
-exit(0);
+    return 0;
 }
